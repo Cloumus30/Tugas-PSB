@@ -1,0 +1,7 @@
+derivative
+y[nT]=(2x[nT]+x[nT-T]-x[nT-3T]-2x[nT-4T])/8
+
+
+thomkin derivative
+
+y(nT)=(1/8T)(-x(nT-2T)-2x(nT-T)+2x
