@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 250
+  Left = 213
   Height = 826
-  Top = 112
+  Top = 160
   Width = 1582
   HorzScrollBar.Range = 100
   VertScrollBar.Range = 100
@@ -63,7 +63,7 @@ object Form1: TForm1
   object Label5: TLabel
     Left = 17
     Height = 20
-    Top = 544
+    Top = 592
     Width = 61
     Caption = 'Step Size'
     ParentColor = False
@@ -71,7 +71,7 @@ object Form1: TForm1
   object Edit1: TEdit
     Left = 89
     Height = 28
-    Top = 544
+    Top = 592
     Width = 100
     TabOrder = 1
     Text = '5'
@@ -79,7 +79,7 @@ object Form1: TForm1
   object Button3: TButton
     Left = 29
     Height = 31
-    Top = 640
+    Top = 688
     Width = 94
     Caption = 'MAV Filter'
     Enabled = False
@@ -89,7 +89,7 @@ object Form1: TForm1
   object Button4: TButton
     Left = 12
     Height = 31
-    Top = 216
+    Top = 264
     Width = 94
     Caption = 'Windowing'
     OnClick = Button4Click
@@ -98,7 +98,7 @@ object Form1: TForm1
   object Edit2: TEdit
     Left = 16
     Height = 28
-    Top = 272
+    Top = 320
     Width = 100
     TabOrder = 4
     Text = '40'
@@ -106,7 +106,7 @@ object Form1: TForm1
   object Button5: TButton
     Left = 17
     Height = 31
-    Top = 336
+    Top = 384
     Width = 94
     Caption = 'LPF'
     OnClick = Button5Click
@@ -115,7 +115,7 @@ object Form1: TForm1
   object ScrollBar1: TScrollBar
     Left = 8
     Height = 26
-    Top = 304
+    Top = 352
     Width = 200
     PageSize = 0
     TabOrder = 6
@@ -124,7 +124,7 @@ object Form1: TForm1
   object Edit3: TEdit
     Left = 16
     Height = 28
-    Top = 392
+    Top = 440
     Width = 100
     TabOrder = 7
     Text = '8'
@@ -132,7 +132,7 @@ object Form1: TForm1
   object Button6: TButton
     Left = 17
     Height = 31
-    Top = 456
+    Top = 504
     Width = 94
     Caption = 'HPF'
     Enabled = False
@@ -142,16 +142,16 @@ object Form1: TForm1
   object ScrollBar2: TScrollBar
     Left = 8
     Height = 26
-    Top = 424
+    Top = 472
     Width = 200
     PageSize = 0
     TabOrder = 9
     OnChange = ScrollBar2Change
   end
   object Button1: TButton
-    Left = 25
+    Left = 17
     Height = 31
-    Top = 160
+    Top = 224
     Width = 94
     Caption = 'DFT'
     OnClick = Button1Click
@@ -160,7 +160,7 @@ object Form1: TForm1
   object Button7: TButton
     Left = 17
     Height = 31
-    Top = 496
+    Top = 544
     Width = 94
     Caption = 'derivative'
     Enabled = False
@@ -170,7 +170,7 @@ object Form1: TForm1
   object Button8: TButton
     Left = 120
     Height = 31
-    Top = 496
+    Top = 544
     Width = 94
     Caption = 'Squarring'
     Enabled = False
@@ -178,23 +178,23 @@ object Form1: TForm1
     TabOrder = 12
   end
   object ListBox1: TListBox
-    Left = 1312
-    Height = 152
+    Left = 1256
+    Height = 169
     Top = 39
-    Width = 208
+    Width = 112
     ItemHeight = 0
     TabOrder = 13
   end
   object ScrollBox1: TScrollBox
     Left = 248
-    Height = 517
+    Height = 536
     Top = 24
     Width = 992
     HorzScrollBar.Page = 967
     HorzScrollBar.Tracking = True
-    VertScrollBar.Page = 492
+    VertScrollBar.Page = 511
     VertScrollBar.Tracking = True
-    ClientHeight = 492
+    ClientHeight = 511
     ClientWidth = 967
     TabOrder = 14
     object Chart6: TChart
@@ -573,7 +573,7 @@ object Form1: TForm1
   object ScrollBar3: TScrollBar
     Left = 12
     Height = 26
-    Top = 584
+    Top = 632
     Width = 191
     PageSize = 0
     TabOrder = 15
@@ -582,12 +582,75 @@ object Form1: TForm1
   object Button9: TButton
     Left = 25
     Height = 31
-    Top = 688
+    Top = 736
     Width = 94
     Caption = 'Thresholding'
     Enabled = False
     OnClick = Button9Click
     TabOrder = 16
+  end
+  object Button10: TButton
+    Left = 136
+    Height = 31
+    Top = 736
+    Width = 94
+    Caption = 'RR Interval'
+    Enabled = False
+    OnClick = Button10Click
+    TabOrder = 17
+  end
+  object Label6: TLabel
+    Left = 1256
+    Height = 20
+    Top = 12
+    Width = 87
+    Caption = 'RR INTERVAL'
+    ParentColor = False
+  end
+  object Label7: TLabel
+    Left = 1256
+    Height = 20
+    Top = 248
+    Width = 90
+    Caption = 'HEART RATE: '
+    ParentColor = False
+  end
+  object Label8: TLabel
+    Left = 1360
+    Height = 31
+    Top = 240
+    Width = 94
+    Caption = 'beat/min'
+    Font.Color = clRed
+    Font.Height = -23
+    ParentColor = False
+    ParentFont = False
+  end
+  object Button11: TButton
+    Left = 17
+    Height = 31
+    Top = 188
+    Width = 94
+    Caption = 'MAV Prefilter'
+    OnClick = Button11Click
+    TabOrder = 18
+  end
+  object ScrollBar4: TScrollBar
+    Left = 8
+    Height = 26
+    Top = 156
+    Width = 151
+    PageSize = 0
+    TabOrder = 19
+    OnChange = ScrollBar4Change
+  end
+  object Edit4: TEdit
+    Left = 120
+    Height = 28
+    Top = 188
+    Width = 100
+    TabOrder = 20
+    Text = '1'
   end
   object OpenDialog1: TOpenDialog
     left = 176

@@ -10,11 +10,14 @@ uses
 
 type
   arrextend=array of extended;
+  arrint=array of integer;
 
   { TForm1 }
 
   TForm1 = class(TForm)
     Button1: TButton;
+    Button10: TButton;
+    Button11: TButton;
     Button2: TButton;
     Button3: TButton;
     Button4: TButton;
@@ -51,17 +54,24 @@ type
     Edit1: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
+    Edit4: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
     ListBox1: TListBox;
     OpenDialog1: TOpenDialog;
     ScrollBar1: TScrollBar;
     ScrollBar2: TScrollBar;
     ScrollBar3: TScrollBar;
+    ScrollBar4: TScrollBar;
     ScrollBox1: TScrollBox;
+    procedure Button10Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -75,7 +85,7 @@ type
     procedure ScrollBar1Change(Sender: TObject);
     procedure ScrollBar2Change(Sender: TObject);
     procedure ScrollBar3Change(Sender: TObject);
-    procedure TabControl1Change(Sender: TObject);
+    procedure ScrollBar4Change(Sender: TObject);
     procedure windowing;
     procedure inputFile;
   private
@@ -88,9 +98,9 @@ var
   Form1: TForm1;
   txtFile:TextFile;
   xw,mav,inptim,inpamp,dattim,datamp:array[0..100000] of extended;
-  hpfInp,derInp,sqrInp,mav2Inp,thresholdInp:array of extended;
+  hpfInp,derInp,sqrInp,mav2Inp,thresholdInp,rrInp,rrInterval,preRes:array of extended;
   Lwind,jumdat,mavstep:integer;
-  fs,thresValue:extended;
+  fs,thresValue,hrate:extended;
 
 implementation
 
@@ -100,6 +110,11 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+//  ScrollBar Prefilter MAV
+    ScrollBar4.Max:=50;
+    ScrollBar4.Min:=0;
+    ScrollBar4.Position:=StrToInt(Edit4.Text);
+
 //  ScrollBar LPF Cut off Freq
     ScrollBar1.Max:=100;
     ScrollBar1.Min:=0;
@@ -115,6 +130,7 @@ begin
     ScrollBar3.Min:=0;
     ScrollBar3.Position:=StrToInt(Edit1.Text);
 end;
+// procedure untuk Input File
 procedure TForm1.inputFile;
 var
   i,k:integer;
@@ -268,25 +284,88 @@ begin
          end;
      result:=mav;
 end;
+//  RR Function
+function rrFunc(inp:array of extended; jumdata:integer):arrint;
+var
+  i,count,j:integer;
+  start:Boolean;
+  res:array of integer;
+begin
+     count:=0;
+     j:=1;
+     start:=False;
+//     perulangan untuk mencari tahu banyak data rr interval
+     for i:=0 to jumdata-1 do
+     begin
+        if (inp[i]=1) and (inp[i-1]=0)then
+        begin
+          if (start=False) then
+             begin
+                  start:=True;
+             end
+          else
+              begin
+                   count:=0;
+                   inc(j);
+              end;
+        end;
+        if (start) then
+        begin
+          inc(count);
+        end;
+     end;
 
+     SetLength(res,j);
+     j:=0;
+     count:=0;
+     start:=False;
+//   Perulangan RR Interval
+     for i:=0 to jumdata-1 do
+     begin
+       if (inp[i]=1) and (inp[i-1]=0)then
+        begin
+          if (start=False) then
+             begin
+                  start:=True;
+             end
+          else
+              begin
+                   res[j]:=count;
+                   count:=0;
+                   inc(j);
+              end;
+        end;
+        if (start) then
+        begin
+          inc(count);
+        end;
+     end;
+
+     result:= res;
+end;
+
+// DFT Button
 procedure TForm1.Button1Click(Sender: TObject);
 var
   i:integer;
   dftres:array of extended;
 begin
     //DFT;
-    dftres:=dftFunc(datamp,jumdat);
+    Chart2BarSeries1.Clear;
+    dftres:=dftFunc(preRes,jumdat);
     for i:=0 to Length(dftres)-1 do
     begin
      Chart2BarSeries1.AddXY(i*fs/jumdat,dftres[i]);
     end;
 end;
 
+// Input File Button
 procedure TForm1.Button2Click(Sender: TObject);
 begin
      inputFile;
+     Button11.Click;
 end;
-
+// MAV Filter Button
 procedure TForm1.Button3Click(Sender: TObject);
 var
   i,step:integer;
@@ -306,12 +385,12 @@ begin
        Button9.Enabled:=True;
      end;
 end;
-
+// Windowing Button
 procedure TForm1.Button4Click(Sender: TObject);
 begin
 windowing;
 end;
-
+// LPF Button
 procedure TForm1.Button5Click(Sender: TObject);
 var
   i,wc:integer;
@@ -319,7 +398,7 @@ var
 begin
 Chart5LineSeries1.clear;
   wc:=StrToInt(Edit2.Text);
-  lpf:=lpfFunc(datamp,wc,jumdat);
+  lpf:=lpfFunc(preRes,wc,jumdat);
   setLength(hpfInp,Length(lpf));
   for i:=0 to Length(lpf)-1 do
   begin
@@ -331,7 +410,7 @@ Chart5LineSeries1.clear;
      button6.Enabled:=True;
    end;
 end;
-
+// HPF Button
 procedure TForm1.Button6Click(Sender: TObject);
 var
   i,wc:integer;
@@ -351,7 +430,7 @@ begin
      button7.Enabled:=True;
    end;
 end;
-
+// Derivative Button
 procedure TForm1.Button7Click(Sender: TObject);
 var
   i:integer;
@@ -370,7 +449,7 @@ begin
     Button8.Enabled:=True;
   end;
 end;
-
+// Squarring Button
 procedure TForm1.Button8Click(Sender: TObject);
 var
   i:integer;
@@ -389,7 +468,7 @@ begin
        Button3.Enabled:=True;
      end;
 end;
-
+// Thresholding Button
 procedure TForm1.Button9Click(Sender: TObject);
 var
   i:integer;
@@ -399,6 +478,7 @@ begin
      Chart1LineSeries2.Clear;
      thresValue:=0.0000172*60/100;
      setLength(thres,Length(thresholdInp));
+     setLength(rrInp,Length(thres));
      for i:=0 to Length(thresholdInp)-1 do
      begin
          if thresholdInp[i]>=thresValue then
@@ -409,16 +489,69 @@ begin
          begin
             thres[i]:=0;
          end;
+         rrInp[i]:=thres[i];
          Chart10LineSeries1.addXY(i,thres[i]);
          Chart1LineSeries2.addXY(i,thres[i]);
      end;
+     if Length(rrInp)>0 then
+     begin
+       Button10.Enabled:=True;
+     end;
+end;
+// Button RR Interval dan Heart Rate
+procedure TForm1.Button10Click(Sender: TObject);
+var
+  i,j:integer;
+  res:array of integer;
+  temp:extended;
+begin
+     ListBox1.Clear;
+     res:=rrFunc(rrInp,Length(rrInp));
+     SetLength(rrInterval,Length(res));
+     temp:=0;
+     j:=0;
+     for i:=0 to Length(res)-1 do
+     begin
+        if res[i]<>0 then
+        begin
+        rrInterval[i]:=60/(res[i]*(1/fs));
+        temp:=temp+rrInterval[i];
+        ListBox1.Items.add(FloatTostr(rrInterval[i]));
+        Inc(j);
+        end;
+     end;
+     hrate:=round(temp/j);
+     Label8.Caption:=FloatToStr(hrate)+' beat/min';
+end;
+// PreFilter MAV Button
+procedure TForm1.Button11Click(Sender: TObject);
+var
+  i,step:integer;
+  res:array of extended;
+begin
+     Chart1LineSeries1.Clear;
+     step:=StrToInt(Edit4.Text);
+     res:=mavFunc(datamp,step,jumdat);
+     setLength(preRes,Length(res));
+     for i:=0 to Length(res)-1 do
+     begin
+        Chart1LineSeries1.addXY(i,res[i]);
+        preRes[i]:=res[i];
+     end;
 end;
 
+// Windowing Procedure
 procedure TForm1.windowing;
 var
   i,j,rangbawah,rangatas:integer;
   p,qrs,t,dftp,dftqrs,dftT:array of extended;
 begin
+     Chart3LineSeries1.Clear;
+     Chart3LineSeries2.Clear;
+     Chart3LineSeries3.Clear;
+     Chart4LineSeries1.Clear;
+     Chart4LineSeries2.Clear;
+     Chart4LineSeries3.Clear;
      SetLength(p,jumdat);
      SetLength(qrs,jumdat);
      SetLength(t,jumdat);
@@ -432,11 +565,11 @@ begin
      begin
        if (i>=rangbawah) and (i<=rangatas) then
        begin
-         p[i]:=datamp[i]*1;
+         p[i]:=preRes[i]*1;
        end
        else
        begin
-         p[i]:=datamp[i]*0
+         p[i]:=preRes[i]*0
        end;
        Chart3LineSeries1.AddXY(i,p[i]);
      end;
@@ -447,11 +580,11 @@ begin
      begin
        if (i>=rangbawah) and (i<=rangatas) then
        begin
-         qrs[i]:=datamp[i]*1;
+         qrs[i]:=preRes[i]*1;
        end
        else
        begin
-         qrs[i]:=datamp[i]*0
+         qrs[i]:=preRes[i]*0
        end;
        Chart3LineSeries2.AddXY(i,qrs[i]);
      end;
@@ -462,11 +595,11 @@ begin
      begin
        if (i>=rangbawah) and (i<=rangatas) then
        begin
-         t[i]:=datamp[i]*1;
+         t[i]:=preRes[i]*1;
        end
        else
        begin
-         t[i]:=datamp[i]*0
+         t[i]:=preRes[i]*0
        end;
        Chart3LineSeries3.AddXY(i,t[i]);
      end;
@@ -493,28 +626,29 @@ begin
      end;
      end;
 end;
-
+// ScrollBar frequency Cut off LPF
 procedure TForm1.ScrollBar1Change(Sender: TObject);
 begin
   Edit2.Text:=IntToStr(ScrollBar1.Position);
   Button5.Click;
 end;
-
+// ScrollBar frequency Cut off HPF
 procedure TForm1.ScrollBar2Change(Sender: TObject);
 begin
      Edit3.Text:=IntToStr(ScrollBar2.Position);
      Button6.Click;
 end;
-
+// ScrollBar Step size MAV Filter
 procedure TForm1.ScrollBar3Change(Sender: TObject);
 begin
   Edit1.Text:=IntToStr(ScrollBar3.Position);
   Button3.Click;
 end;
 
-procedure TForm1.TabControl1Change(Sender: TObject);
+procedure TForm1.ScrollBar4Change(Sender: TObject);
 begin
-  ListBox1.items.add('change');
+  Edit4.Text:=IntToStr(ScrollBar4.Position);
+  Button11.Click;
 end;
 
 
