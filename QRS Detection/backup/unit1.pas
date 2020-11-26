@@ -194,7 +194,7 @@ begin
        end;
        for i:=0 to round(jumdata/2) do
      begin
-      magspek[i]:=1/(jumdata/2)*(sqrt(sqr(sinimaj[i]) +sqr(sinreal[i])));
+      magspek[i]:=(sqrt(sqr(sinimaj[i]) +sqr(sinreal[i])))/(jumdata/2);
      end;
      result:=magspek;
   end;

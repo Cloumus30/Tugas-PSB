@@ -194,7 +194,7 @@ begin
        end;
        for i:=0 to round(jumdata/2) do
      begin
-      magspek[i]:=1/(jumdata/2)*(sqrt(sqr(sinimaj[i]) +sqr(sinreal[i])));
+      magspek[i]:=(sqrt(sqr(sinimaj[i]) +sqr(sinreal[i])))/(jumdata/2);
      end;
      result:=magspek;
   end;
@@ -607,23 +607,23 @@ begin
      if button4.Active then
      begin
 //   Plot DFT P
-       dftp:=dftFunc(p,jumdat);
-       for i:=0 to Length(dftp) do
-       begin
-         Chart4LineSeries1.addxy(i*fs/jumdat,dftp[i]);
-       end;
+          dftp:=dftFunc(p,Length(p));
+          for i:=0 to Length(dftp) do
+          begin
+               Chart4LineSeries1.addxy(i*fs/jumdat,dftp[i]);
+          end;
 //   Plot DFT QRS
-     dftqrs:=dftFunc(qrs,jumdat);
-     for i:=0 to Length(dftqrs) do
-     begin
-     Chart4LineSeries2.addxy(i*fs/jumdat,dftqrs[i]);
-     end;
+          dftqrs:=dftFunc(qrs,Length(qrs));
+          for i:=0 to Length(dftqrs) do
+          begin
+               Chart4LineSeries2.addxy(i*fs/jumdat,dftqrs[i]);
+          end;
 //   PLOT DFT T
-     dftT:=dftFunc(t,jumdat);
-     for i:=0 to Length(dftT) do
-     begin
-     Chart4LineSeries3.addxy(i*fs/jumdat,dftT[i]);
-     end;
+          dftT:=dftFunc(t,Length(t));
+          for i:=0 to Length(dftT) do
+          begin
+               Chart4LineSeries3.addxy(i*fs/jumdat,dftT[i]);
+          end;
      end;
 end;
 // ScrollBar frequency Cut off LPF

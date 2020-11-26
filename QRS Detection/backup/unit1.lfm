@@ -567,6 +567,7 @@ object Form1: TForm1
       )
       Title.Visible = True
       object Chart10LineSeries1: TLineSeries
+        LinePen.Color = clBlue
       end
     end
   end
