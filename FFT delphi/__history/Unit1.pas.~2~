@@ -14,19 +14,11 @@ type
     Series1: TLineSeries;
     Chart2: TChart;
     Chart3: TChart;
+    Series3: TBarSeries;
     Series2: TBarSeries;
     Series4: TBarSeries;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Label1: TLabel;
-    Label2: TLabel;
-    Edit3: TEdit;
-    Label3: TLabel;
-    Button2: TButton;
-    Series3: TLineSeries;
     procedure Button1Click(Sender: TObject);
  procedure fft(t:extended);
-    procedure Button2Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -36,7 +28,7 @@ type
 var
   Form1: TForm1;
   x1,amp,xi,xr,xasalr,xasali:array [-10000..10000] of extended;
-  freq,jumdat,i,N,panjang_fft, indexfft,fs:integer;
+  jumdat,i,N,panjang_fft, indexfft,fs:integer;
 
 
 implementation
@@ -47,14 +39,11 @@ procedure TForm1.Button1Click(Sender: TObject);
   var i:integer;
 begin
 Series1.Clear;
-Series2.Clear;
-Series4.Clear;
-jumdat:=StrToInt(Edit3.Text);
-fs:=StrToInt(Edit1.Text);
-freq:=StrToInt(Edit2.Text);
+jumdat:=512;
+fs:=160;
 for i:= 1 to jumdat do
   begin
-   x1[i]:= 1.5+3*sin(2*pi*i/fs*freq);
+   x1[i]:= 1.5+3*sin(2*pi*i/fs*20);
    Series1.AddXY(i,x1[i]);
   end;
 
@@ -100,25 +89,6 @@ for i:= 1 to jumdat do
 
 
 
-
-end;
-
-procedure TForm1.Button2Click(Sender: TObject);
-var
-  i:integer;
-begin
-Series3.Clear;
-for i:= 1 to panjang_fft do  //copy data real dan imaginary in freq domain to variables in fft procedure
-   begin
-     xasalr[i]:=xr[i];
-     xasali[i]:=xi[i];
-   end;
-   fft(-1); //panggil procedure fft untuk fungsi inverse
-
-for i:= 1 to panjang_fft do //display output signal
-   begin
-     series3.addxy(i,xr[i]+xi[i]);
-   end;
 
 end;
 
