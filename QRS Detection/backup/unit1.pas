@@ -29,6 +29,7 @@ type
     Chart1: TChart;
     Chart10: TChart;
     Chart10LineSeries1: TLineSeries;
+    Chart10LineSeries2: TLineSeries;
     Chart1LineSeries1: TLineSeries;
     Chart1LineSeries2: TLineSeries;
     Chart2: TChart;
@@ -56,6 +57,10 @@ type
     Edit3: TEdit;
     Edit4: TEdit;
     Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
@@ -63,13 +68,16 @@ type
     Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
+    Label9: TLabel;
     ListBox1: TListBox;
     OpenDialog1: TOpenDialog;
+    PageControl1: TPageControl;
     ScrollBar1: TScrollBar;
     ScrollBar2: TScrollBar;
     ScrollBar3: TScrollBar;
     ScrollBar4: TScrollBar;
-    ScrollBox1: TScrollBox;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
     procedure Button10Click(Sender: TObject);
     procedure Button11Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -82,6 +90,7 @@ type
     procedure Button8Click(Sender: TObject);
     procedure Button9Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure Label7Click(Sender: TObject);
     procedure ScrollBar1Change(Sender: TObject);
     procedure ScrollBar2Change(Sender: TObject);
     procedure ScrollBar3Change(Sender: TObject);
@@ -130,6 +139,12 @@ begin
     ScrollBar3.Min:=0;
     ScrollBar3.Position:=StrToInt(Edit1.Text);
 end;
+
+procedure TForm1.Label7Click(Sender: TObject);
+begin
+
+end;
+
 // procedure untuk Input File
 procedure TForm1.inputFile;
 var
@@ -344,6 +359,20 @@ begin
      result:= res;
 end;
 
+function deviation(inp:arrextend; mean:extended; jumdata:integer):extended;
+var
+  sum:extended;
+  i:integer;
+begin
+     sum:=0;
+     setLength(inp,jumdata);
+   for i:=0 to jumdata-1 do
+       begin
+	    sum := sum + sqr(inp[i]-mean);
+       end;
+   result := sqrt(sum/(jumdata-1));
+end;
+
 // DFT Button
 procedure TForm1.Button1Click(Sender: TObject);
 var
@@ -491,7 +520,7 @@ begin
          end;
          rrInp[i]:=thres[i];
          Chart10LineSeries1.addXY(i,thres[i]);
-         Chart1LineSeries2.addXY(i,thres[i]);
+         Chart10LineSeries2.addXY(i,datamp[i]);
      end;
      if Length(rrInp)>0 then
      begin
@@ -503,7 +532,9 @@ procedure TForm1.Button10Click(Sender: TObject);
 var
   i,j:integer;
   res:array of integer;
-  temp:extended;
+  hrateMean:extended;
+  hrate: array[0..100] of extended;
+  temp, sdev:extended;
 begin
      ListBox1.Clear;
      res:=rrFunc(rrInp,Length(rrInp));
@@ -516,12 +547,16 @@ begin
         begin
         rrInterval[i]:=60/(res[i]*(1/fs));
         temp:=temp+rrInterval[i];
-        ListBox1.Items.add(FloatTostr(rrInterval[i]));
+        ListBox1.Items.add('Heart Rate['+IntToStr(j)+']: '+FloatTostr(rrInterval[i]));
+        hrate[j]:=rrInterval[i];
         Inc(j);
         end;
      end;
-     hrate:=round(temp/j);
-     Label8.Caption:=FloatToStr(hrate)+' beat/min';
+     hrateMean:=round(temp/j);
+     Label8.Caption:=FloatToStr(hrateMean)+' bpm';
+
+     sdev:=deviation(hrate,hrateMean,j);
+     Label10.Caption:='-+'+FloatToStr(Round(sdev))+ ' bpm';
 end;
 // PreFilter MAV Button
 procedure TForm1.Button11Click(Sender: TObject);
@@ -607,23 +642,23 @@ begin
      if button4.Active then
      begin
 //   Plot DFT P
-       dftp:=dftFunc(p,jumdat);
-       for i:=0 to Length(dftp) do
-       begin
-         Chart4LineSeries1.addxy(i*fs/jumdat,dftp[i]);
-       end;
+          dftp:=dftFunc(p,Length(p));
+          for i:=0 to Length(dftp) do
+          begin
+               Chart4LineSeries1.addxy(i*fs/jumdat,dftp[i]);
+          end;
 //   Plot DFT QRS
-     dftqrs:=dftFunc(qrs,jumdat);
-     for i:=0 to Length(dftqrs) do
-     begin
-     Chart4LineSeries2.addxy(i*fs/jumdat,dftqrs[i]);
-     end;
+          dftqrs:=dftFunc(qrs,Length(qrs));
+          for i:=0 to Length(dftqrs) do
+          begin
+               Chart4LineSeries2.addxy(i*fs/jumdat,dftqrs[i]);
+          end;
 //   PLOT DFT T
-     dftT:=dftFunc(t,jumdat);
-     for i:=0 to Length(dftT) do
-     begin
-     Chart4LineSeries3.addxy(i*fs/jumdat,dftT[i]);
-     end;
+          dftT:=dftFunc(t,Length(t));
+          for i:=0 to Length(dftT) do
+          begin
+               Chart4LineSeries3.addxy(i*fs/jumdat,dftT[i]);
+          end;
      end;
 end;
 // ScrollBar frequency Cut off LPF
